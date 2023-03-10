@@ -1,4 +1,5 @@
 :- use_module(animate).
+:- use_module(print).
 
 :- initialization main.
 
@@ -15,4 +16,6 @@ next_world(X, _, Y) :- Y is X + 1.
 picture(N, text(M, Colour)) :-
     number_string(N, M), red(Colour).
 
-main :- animate(0,picture,next_world), halt.
+% main :- animate(0,picture,next_world), halt.
+
+main :- test_printen, nl, halt.
