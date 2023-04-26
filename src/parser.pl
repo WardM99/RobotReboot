@@ -37,16 +37,16 @@ connector --> cross_connector.
 connector --> " ".
 
 
-opvulling(Board, Y, X, Nboard) --> robot0, {append([robot0(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot1, {append([robot1(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot2, {append([robot2(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot3, {append([robot3(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot4, {append([robot4(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot5, {append([robot5(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot6, {append([robot6(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot7, {append([robot7(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot8, {append([robot8(X, Y)], Nboard, Board)}.
-opvulling(Board, Y, X, Nboard) --> robot9, {append([robot9(X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot0, {append([robot(0, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot1, {append([robot(1, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot2, {append([robot(2, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot3, {append([robot(3, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot4, {append([robot(4, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot5, {append([robot(5, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot6, {append([robot(6, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot7, {append([robot(7, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot8, {append([robot(8, X, Y)], Nboard, Board)}.
+opvulling(Board, Y, X, Nboard) --> robot9, {append([robot(9, X, Y)], Nboard, Board)}.
 opvulling(Board, Y, X, Nboard) --> doel, {append([doel(X, Y)], Nboard, Board)}.
 opvulling(Board, _, _, Board) --> " ".
 

@@ -1,29 +1,5 @@
 :- module(print, [test_printen/1]).
 
-% initial(vakje(coordinaat(0,0), muren(1,0,0,1), vulling(1))).
-% initial(vakje(coordinaat(1,0), muren(1,1,0,0), vulling(e))).
-% initial(vakje(coordinaat(2,0), muren(1,0,0,1), vulling(e))).
-% initial(vakje(coordinaat(3,0), muren(1,1,1,0), vulling(e))).
-% 
-% initial(vakje(coordinaat(0,1), muren(0,0,0,1), vulling(e))).
-% initial(vakje(coordinaat(1,1), muren(0,0,1,0), vulling(e))).
-% initial(vakje(coordinaat(2,1), muren(0,0,1,0), vulling(0))).
-% initial(vakje(coordinaat(3,1), muren(1,1,0,0), vulling(e))).
-% 
-% initial(vakje(coordinaat(0,2), muren(0,0,0,1), vulling(e))).
-% initial(vakje(coordinaat(1,2), muren(1,1,0,0), vulling(d))).
-% initial(vakje(coordinaat(2,2), muren(1,0,0,1), vulling(e))).
-% initial(vakje(coordinaat(3,2), muren(0,1,0,0), vulling(e))).
-% 
-% initial(vakje(coordinaat(0,3), muren(0,1,1,1), vulling(e))).
-% initial(vakje(coordinaat(1,3), muren(0,0,1,1), vulling(e))).
-% initial(vakje(coordinaat(2,3), muren(0,0,1,0), vulling(e))).
-% initial(vakje(coordinaat(3,3), muren(0,1,1,0), vulling(e))).
-
-% initial_board(Bord) :-
-%     findall(Vakje, initial(Vakje), Bord).
-
-
 test_printen(Bord) :-
     print_top_lijn(Bord, 0).
 
@@ -166,10 +142,10 @@ print_connector(_, _, _) :- write(" ").
 
 
 print_opvulling(Bord, Y, X) :- 
-    member(robot0(X,Y),Bord),
+    member(robot(0, X,Y),Bord),
     robot0.
 print_opvulling(Bord, Y, X) :- 
-    member(robot1(X,Y),Bord),
+    member(robot(1, X,Y),Bord),
     robot1.
 print_opvulling(Bord, Y, X) :- 
     member(doel(X,Y),Bord),

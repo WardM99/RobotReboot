@@ -2,6 +2,7 @@
 %:- use_module(animate).
 :- use_module(print).
 :- use_module(parser).
+:- use_module(game).
 
 
 %!  next_world(?X:int, +I:string, -Y:int) is det
@@ -27,5 +28,8 @@ main:-
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
-    test_printen(B),
+    zet(B, 0, l, NB),
+    zet(NB, 0, u, NNB),
+    zet(NNB, 0, d, NNNB),
+    test_printen(NNNB),
     halt(0).
