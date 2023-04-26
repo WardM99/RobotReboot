@@ -1,126 +1,182 @@
-:- module(print, [test_printen/0]).
+:- module(print, [test_printen/1]).
 
-initial(vakje(coordinaat(0,0), muren(1,0,0,1), vulling(1))).
-initial(vakje(coordinaat(1,0), muren(1,1,0,0), vulling(e))).
-initial(vakje(coordinaat(2,0), muren(1,0,0,1), vulling(e))).
-initial(vakje(coordinaat(3,0), muren(1,1,1,0), vulling(e))).
+% initial(vakje(coordinaat(0,0), muren(1,0,0,1), vulling(1))).
+% initial(vakje(coordinaat(1,0), muren(1,1,0,0), vulling(e))).
+% initial(vakje(coordinaat(2,0), muren(1,0,0,1), vulling(e))).
+% initial(vakje(coordinaat(3,0), muren(1,1,1,0), vulling(e))).
+% 
+% initial(vakje(coordinaat(0,1), muren(0,0,0,1), vulling(e))).
+% initial(vakje(coordinaat(1,1), muren(0,0,1,0), vulling(e))).
+% initial(vakje(coordinaat(2,1), muren(0,0,1,0), vulling(0))).
+% initial(vakje(coordinaat(3,1), muren(1,1,0,0), vulling(e))).
+% 
+% initial(vakje(coordinaat(0,2), muren(0,0,0,1), vulling(e))).
+% initial(vakje(coordinaat(1,2), muren(1,1,0,0), vulling(d))).
+% initial(vakje(coordinaat(2,2), muren(1,0,0,1), vulling(e))).
+% initial(vakje(coordinaat(3,2), muren(0,1,0,0), vulling(e))).
+% 
+% initial(vakje(coordinaat(0,3), muren(0,1,1,1), vulling(e))).
+% initial(vakje(coordinaat(1,3), muren(0,0,1,1), vulling(e))).
+% initial(vakje(coordinaat(2,3), muren(0,0,1,0), vulling(e))).
+% initial(vakje(coordinaat(3,3), muren(0,1,1,0), vulling(e))).
 
-initial(vakje(coordinaat(0,1), muren(0,0,0,1), vulling(e))).
-initial(vakje(coordinaat(1,1), muren(0,0,1,0), vulling(e))).
-initial(vakje(coordinaat(2,1), muren(0,0,0,0), vulling(0))).
-initial(vakje(coordinaat(3,1), muren(1,1,0,0), vulling(e))).
-
-initial(vakje(coordinaat(0,2), muren(0,0,0,1), vulling(e))).
-initial(vakje(coordinaat(1,2), muren(1,1,0,0), vulling(d))).
-initial(vakje(coordinaat(2,2), muren(0,0,0,1), vulling(e))).
-initial(vakje(coordinaat(3,2), muren(0,1,0,0), vulling(e))).
-
-initial(vakje(coordinaat(0,3), muren(0,1,1,1), vulling(e))).
-initial(vakje(coordinaat(1,3), muren(0,0,1,1), vulling(e))).
-initial(vakje(coordinaat(2,3), muren(0,0,1,0), vulling(e))).
-initial(vakje(coordinaat(3,3), muren(0,1,1,0), vulling(e))).
-
-initial_board(Bord) :-
-    findall(Vakje, initial(Vakje), Bord).
-
-
-% alleen naar E en S kijken, behalve bij Y=0 ook naar N en bij X=0 ook naar W
-% voor de hoeken kijken of er vakje volgt, zo niet, hoek hoektekenen
+% initial_board(Bord) :-
+%     findall(Vakje, initial(Vakje), Bord).
 
 
-test_printen :-
-    initial_board(Bord),
-    test_printen_eerste_lijn(Bord,0),nl,
-    test_printen_vervolg(Bord, 0, 0),nl,
-    test_printen_vervolg_vervolg(Bord, 0,0),nl,
-    test_printen_vervolg(Bord, 0, 1),nl,
-    test_printen_vervolg_vervolg(Bord, 0,1),nl,
-    test_printen_vervolg(Bord, 0, 2),nl,
-    test_printen_vervolg_vervolg(Bord, 0,2),nl,
-    test_printen_vervolg(Bord, 0, 3),nl,
-    test_printen_vervolg_vervolg(Bord, 0,3),nl.
+test_printen(Bord) :-
+    print_top_lijn(Bord, 0).
 
 
-test_printen_eerste_lijn(Bord,3) :-
-    write_top_square(Bord, 3).
-test_printen_eerste_lijn(Bord, X) :-
-    write_top_square(Bord, X),
-    NewX is X + 1,
-    test_printen_eerste_lijn(Bord, NewX).
+print_top_lijn(Bord, Y) :-
+    print_top_lijn_vakje(Bord, Y, 0).
 
-test_printen_vervolg(Bord, 3, Y) :-
-    write_square(Bord, 3, Y).
-test_printen_vervolg(Bord, X, Y) :-
-    write_square(Bord, X, Y),
-    NewX is X + 1,
-    test_printen_vervolg(Bord, NewX, Y).
+print_top_lijn_vakje(Bord, Y, X) :- 
+    \+member(width(X), Bord),
+    print_connector(Bord, Y, X),
+    print_top_lijn_vakje_muur(Bord, Y, X),
+    NX is X + 1,
+    print_top_lijn_vakje(Bord, Y, NX).
 
-test_printen_vervolg_vervolg(Bord, 3, Y) :-
-    write_bottom_square(Bord, 3, Y).
-test_printen_vervolg_vervolg(Bord, X, Y) :-
-    write_bottom_square(Bord, X, Y),
-    NewX is X + 1,
-    test_printen_vervolg_vervolg(Bord, NewX, Y).
+print_top_lijn_vakje(Bord, Y, X) :- 
+    member(width(X), Bord),
+    \+member(height(Y), Bord),
+    print_connector(Bord, Y, X),
+    nl,
+    print_lijn(Bord, Y).
 
+print_top_lijn_vakje(Bord, Y, X) :- 
+    member(width(X), Bord),
+    member(height(Y), Bord),
+    print_connector(Bord, Y, X),
+    nl.
 
-% De top van een vakje tekeken. Wordt alleen gedaan bij de eerste rij
-write_top_square(Bord, 0) :- 
-    \+member(vakje(coordinaat(0,0), muren(_,1,_,_), _), Bord),
-    top_left_corner, horizontal, horizontal.
-write_top_square(Bord, 0) :-
-    member(vakje(coordinaat(0,0), muren(_,1,_,_), _), Bord),
-    top_left_corner, horizontal, horizontal_connector_bottom.
-write_top_square(Bord, X) :-
-    \+member(vakje(coordinaat(X,0), muren(_,1,_,_), _), Bord),
-    horizontal, horizontal.
-write_top_square(Bord, X) :-
-    member(vakje(coordinaat(X,0), muren(_,1,_,_), _), Bord),
-    NewX is X + 1,
-    member(vakje(coordinaat(NewX, 0), _, _), Bord),
-    horizontal, horizontal_connector_top.
-write_top_square(Bord, X) :-
-    member(vakje(coordinaat(X,0), muren(_,1,_,_), _), Bord),
-    NewX is X + 1,
-    \+member(vakje(coordinaat(NewX, 0), _, _), Bord),
-    horizontal, top_right_corner.
+print_top_lijn_vakje_muur(Bord, Y, X) :-
+    NY is Y - 1,
+    \+member(muur(X,Y,X,NY),Bord),
+    nsbp.
 
-% De inhoud van het vakje tekenen en de oosterse muur, als het nodig is.
-write_square(Bord, 0, Y) :-
-    member(vakje(coordinaat(0,Y), muren(_,E,_,_), vulling(V)), Bord),
-    vertical, write_filling(V), write_east_wall(E).
-write_square(Bord, X, Y) :-
-    member(vakje(coordinaat(X,Y), muren(_,E,_,_), vulling(V)), Bord),
-    write_filling(V), write_east_wall(E).
-
-% De bottom van een vakje tekenen.
-write_bottom_square(Bord, 0, Y) :-
-    member(vakje(coordinaat(0,Y), muren(_,_,0,_), _), Bord),
-    vertical, nsbp, nsbp.
-write_bottom_square(Bord, 0, Y) :-
-    member(vakje(coordinaat(0,Y), muren(_,_,1,_), _), Bord),
-    NewY is Y + 1,
-    member(vakje(coordinaat(0,NewY),_,_), Bord),
-    vertical_connector_left, horizontal, nsbp.
-write_bottom_square(Bord, 0, Y) :-
-    member(vakje(coordinaat(0,Y), muren(_,_,1,_), _), Bord),
-    NewY is Y + 1,
-    \+member(vakje(coordinaat(0,NewY),_,_), Bord),
-    bottom_left_corner, horizontal, nsbp.
-write_bottom_square(Bord, X, Y) :-
-    member(vakje(coordinaat(X,Y), muren(_,_,S,_), _), Bord),
-    write_south_wall(S), nsbp.
+print_top_lijn_vakje_muur(Bord, Y, X) :-
+    NY is Y - 1,
+    member(muur(X,Y,X,NY),Bord),
+    horizontal.
 
 
-write_filling(0) :- robot0.
-write_filling(1) :- robot1.
-write_filling(d) :- doel.
-write_filling(e) :- nsbp.
+print_lijn(Bord, Y) :-
+    print_lijn_vakje(Bord, Y, 0).
 
-write_east_wall(0) :- nsbp.
-write_east_wall(1) :- vertical.
+print_lijn_vakje(Bord, Y, X) :-
+    \+member(width(X), Bord),
+    print_lijn_vakje_muur(Bord, Y, X),
+    print_opvulling(Bord, Y, X),
+    NX is X + 1,
+    print_lijn_vakje(Bord, Y, NX).
 
-write_south_wall(0) :- nsbp.
-write_south_wall(1) :- horizontal.
+print_lijn_vakje(Bord, Y, X) :-
+    member(width(X), Bord),
+    print_lijn_vakje_muur(Bord, Y, X),
+    nl,
+    NY is Y + 1,
+    print_top_lijn(Bord, NY).
+
+print_lijn_vakje_muur(Bord, Y, X) :-
+    NX is X - 1,
+    member(muur(X,Y,NX,Y), Bord),
+    vertical.
+
+print_lijn_vakje_muur(Bord, Y, X) :-
+    NX is X - 1,
+    \+member(muur(X,Y,NX,Y), Bord),
+    nsbp.
+
+
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    cross_connector.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    vertical_connector_right.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    vertical_connector_left.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    horizontal_connector_top.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    horizontal_connector_bottom.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(X, Y, X, PY), Bord),
+    top_left_corner.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    top_right_corner.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    bottom_left_corner.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(PX,Y, PX, PY), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    bottom_right_corner.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, X, PY), Bord),
+    member(muur(PX,Y, PX, PY), Bord),
+    horizontal.
+print_connector(Bord, Y, X) :-
+    PX is X - 1,
+    PY is Y - 1,
+    member(muur(X, Y, PX, Y), Bord),
+    member(muur(X,PY, PX, PY), Bord),
+    vertical.
+print_connector(_, _, _) :- write(" ").
+
+
+print_opvulling(Bord, Y, X) :- 
+    member(robot0(X,Y),Bord),
+    robot0.
+print_opvulling(Bord, Y, X) :- 
+    member(robot1(X,Y),Bord),
+    robot1.
+print_opvulling(Bord, Y, X) :- 
+    member(doel(X,Y),Bord),
+    doel.
+print_opvulling(_,_,_) :-
+    write(" ").
+
 
 horizontal :- write("\u2501").
 vertical :- write("\u2503").
@@ -132,10 +188,11 @@ vertical_connector_left :- write("\u2523").
 vertical_connector_right :- write("\u252b").
 horizontal_connector_top :- write("\u2533").
 horizontal_connector_bottom :- write("\u253b").
+cross_connector :- write("\u254b").
 
 robot0 :- write("\u25a3").
 robot1 :- write("\u25a0").
 
 doel :- write("\u25ce").
 
-nsbp :- write("\u00a0").
+nsbp :- write(" ").
