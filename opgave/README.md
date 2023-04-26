@@ -89,14 +89,23 @@ Elke zet beweegt slechts 1 robot.
 
 Je programma moet in staat zijn spelers de puzzel te laten spelen via de command-line.
 
-Hierbij is het de bedoeling dat het volledige scherm hertekenend wordt als het bord bijgewerkt wordt.
+Voor het spelen van het spel wordt jouw programma opgeroepen met de `--game` optie, en het bord ingelezen via een bestand.
+We verwachten dat het programma op de volgende manier kan opgeroepen worden:
+
+```bash
+> swipl main.pl -- '--game=[{PAD}]'
+```
+
+Waarbij `{PAD}` vervangen moet worden met het pad naar het inputbestand met de bordvoorstelling.
+
+Tijdens de interactieve modus, is het de bedoeling dat het volledige scherm hertekenend wordt als het bord bijgewerkt wordt.
 Gebruik hiervoor de [ANSI X3.64 Escape sequences](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797).
 Gebruik steeds de hexadecimale representaties. In prolog voor `ESC` wordt dit dan: `"\x1B\"`.
 Je kan de Escape sequences ook gebruiken om kleur aan je spel toe te voegen.
 Je dient de ANSI Escape sequences enkel te gebruiken in de interactieve modus.
 
 Tijdens een interactief spel geeft je programma steeds de huidige staat van het bord weer met de robots en het doel.
-Je kiest zelf hoe je spel eruit ziet.
+Je kiest zelf hoe je spel er uitziet.
 Het printen van het bord op exact dezelfde manier als de invoer, wordt beschouwd als de meest minimaal aanvaardbare versie.
 Je wordt dus aangemoedigd om je interactief spel zelf op te leuken.
 
