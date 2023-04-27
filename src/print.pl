@@ -1,4 +1,4 @@
-:- module(print, [test_printen/1]).
+:- module(print, [test_printen/1, write_solve/1]).
 
 test_printen(Bord) :-
     print_top_lijn(Bord, 0).
@@ -172,3 +172,17 @@ robot1 :- write("\u25a0").
 doel :- write("\u25ce").
 
 nsbp :- write(" ").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+write_solve([(R,M)]) :-
+    write(R),write_upper_move(M).
+write_solve([(R,M)|T]) :-
+    write_solve(T),
+    write(","),write(R),write_upper_move(M).
+
+
+write_upper_move(l) :- write("L").
+write_upper_move(r) :- write("R").
+write_upper_move(d) :- write("D").
+write_upper_move(u) :- write("U").

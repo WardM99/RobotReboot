@@ -23,13 +23,25 @@ next_world(X, _, Y) :- Y is X + 1.
 
 %main :- test_printen, nl, halt.
 
+main :-
+    current_prolog_flag(argv, ['--solve'|_]),
+    read_string(user_input, _, Str),
+    string_codes(Str, Codes),
+    parse(B, Codes, []),
+    solve(B, Moves),
+    write_solve(Moves),nl,
+    halt(0).
+    
 
 main:-
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
-    zet(B, 0, l, NB),
-    zet(NB, 0, u, NNB),
-    zet(NNB, 0, d, NNNB),
-    test_printen(NNNB),
+    write(B),
     halt(0).
+
+printBorden([]).
+printBorden([B|T]) :-
+    test_printen(B),
+    nl,
+    printBorden(T).

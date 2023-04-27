@@ -5,7 +5,7 @@
 
 parse(Board) --> top_vakje(Board, 0 ,0).
 
-top_vakje(Board, Y, _) --> bottom_right_corner, new_line, {Board = [height(Y)]}.
+top_vakje(Board, Y, _) --> bottom_right_corner, new_line, {Board = [height(Y)| [moves([])]]}.
 top_vakje(Board, 0, X) --> connector, new_line, !, {append([width(X)], Board2, Board)}, vakje(Board2, 0, 0).
 top_vakje(Board, Y, _) --> connector, new_line, !, vakje(Board, Y, 0).
 top_vakje(Board, Y, X) --> connector, horizontale_muur(Board, Y, X, Nboard), {NX is X+1}, top_vakje(Nboard, Y, NX).
