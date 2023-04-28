@@ -148,6 +148,30 @@ print_opvulling(Bord, Y, X) :-
     member(robot(1, X,Y),Bord),
     robot1.
 print_opvulling(Bord, Y, X) :- 
+    member(robot(2, X,Y),Bord),
+    robot2.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(3, X,Y),Bord),
+    robot3.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(4, X,Y),Bord),
+    robot4.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(5, X,Y),Bord),
+    robot5.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(6, X,Y),Bord),
+    robot6.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(7, X,Y),Bord),
+    robot7.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(8, X,Y),Bord),
+    robot8.
+print_opvulling(Bord, Y, X) :- 
+    member(robot(9, X,Y),Bord),
+    robot9.
+print_opvulling(Bord, Y, X) :- 
     member(doel(X,Y),Bord),
     doel.
 print_opvulling(_,_,_) :-
@@ -168,6 +192,14 @@ cross_connector :- write("\u254b").
 
 robot0 :- write("\u25a3").
 robot1 :- write("\u25a0").
+robot2 :- write("\u250f").
+robot3 :- write("\u25c6").
+robot4 :- write("\u25c7").
+robot5 :- write("\u25c8").
+robot6 :- write("\u25c9").
+robot7 :- write("\u25e9").
+robot8 :- write("\u25ed").
+robot9 :- write("\u25f2").
 
 doel :- write("\u25ce").
 
