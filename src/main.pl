@@ -23,6 +23,7 @@ next_world(X, _, Y) :- Y is X + 1.
 
 %main :- test_printen, nl, halt.
 
+% Solve
 main :-
     current_prolog_flag(argv, ['--solve'|_]),
     read_string(user_input, _, Str),
@@ -31,9 +32,25 @@ main :-
     solve(B, Moves),
     write_solve(Moves),nl,
     halt(0).
+
+% Test
+main :- 
+    current_prolog_flag(argv, Argv),
+    member(Opt, Argv),
+    atom_concat('--test=[', TestOpt, Opt), % check if --test option is present
+    atom_concat(RandMOpt, ']', TestOpt),
+    atomic_list_concat([RobotAtom,Move], ',', RandMOpt),    
+    atom_number(RobotAtom, Robot),
+    read_string(user_input, _, Str),
+    string_codes(Str, Codes),
+    parse(B, Codes, []),
+    zet(B,Robot,Move,NewBoard),
+    test_printen(NewBoard),
+    halt(0).
     
 
-main:-
+% default: TODO: should be empty
+main:- 
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
