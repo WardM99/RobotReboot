@@ -29,7 +29,6 @@ picture(N, text(M, Colour)) :-
 
 % Solve
 main :-
-    write("IETS"),nl,
     current_prolog_flag(argv, ['--solve'|_]),
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
