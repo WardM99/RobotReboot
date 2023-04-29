@@ -91,7 +91,7 @@ solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
     \+visited(CurrentBoard),!,
-    asserta(visited(CurrentBoard)),
+    assert(visited(CurrentBoard)),
     allMoves((CurrentBoard, Moves), Boards),
     append(T, Boards, NextBoards),!,
     solve(Next,NextBoards, SolveMoves).
