@@ -1,4 +1,5 @@
 :- module(game, [zet/4, solve/2]).
+:- dynamic visited/1.
 
 zet(Board, Robot, d, NewBoard) :-
     member(robot(Robot, X,Y), Board),
@@ -67,7 +68,6 @@ posibleMove(r).
 posibleMove(u).
 posibleMove(d).
 
-visited([]).
 
 allMoves((Board,CurrentMoves), Boards) :-
     findall(Move, posibleMove(Move), Moves),
