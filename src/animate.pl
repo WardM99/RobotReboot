@@ -1,5 +1,5 @@
 % Animate library
-:- module(animate, [animate/3, red/1]).
+:- module(animate, [animate/3, red/1, white/1]).
 
 %!  animate(+S, :P, :NW) is det
 %
@@ -17,15 +17,20 @@ animate(S, P, NW) :-
     call(NWF),
     animate(Next_world, P, NW).
 
+
 %!  draw(++Picture) is det
 %
 %   Draws the *Picture*.
 draw(text(M, Colour)) :-
-    format("~w~w", [Colour, M]), nl, format(">_ ").
+    blink(B),
+    white(C),
+    format("~w~w", [Colour, M]), nl, format("~w~w~w",[B,C,">_ "]).
 
 % ANSI ESC code to clear entire screen
 clear("\x1B\c").
 
 % ANSI ESC Code to colour text red
 red("\033[38;5;160m").
+white("\033[38;5;255m").
+blink("\033[5m").
 

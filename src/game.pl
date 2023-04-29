@@ -67,33 +67,38 @@ posibleMove(r).
 posibleMove(u).
 posibleMove(d).
 
-allMoves(Board, Boards) :-
+visited([]).
+
+allMoves((Board,CurrentMoves), Boards) :-
     findall(Move, posibleMove(Move), Moves),
     findall(Robot, member(robot(Robot,_,_), Board), Robots),
     findall((R,M), (member(M, Moves), member(R, Robots)), Pairs),
-    moves(Board, Pairs, Boards).
+    moves((Board,CurrentMoves), Pairs, Boards).
 
-moves(_, [], []).
-moves(Board, [(R,M)|Tail], Boards) :-
+moves((_,_), [], []).
+moves((Board,Moves), [(R,M)|Tail], Boards) :-
     zet(Board, R, M, NewBoard),
-    moves(Board,Tail, NextBoards),
-    select(moves(CurrentMoves), NewBoard, NewBoard2),
-    append([moves([(R,M)|CurrentMoves])], NewBoard2, NewBoard3),
-    append([NewBoard3], NextBoards, Boards).
+    moves((Board,Moves),Tail, NextBoards),
+    append([(NewBoard,[(R,M)|Moves])], NextBoards, Boards).
 
 solve(CurrentBoard, SolveMoves) :-
-    allMoves(CurrentBoard, [Next|T]),
+    allMoves((CurrentBoard, []), [Next|T]),
     solve(Next, T, SolveMoves).
 
-solve(CurrentBoard, _, SolveMoves) :-
-    currentBoardSolved(CurrentBoard),
-    member(moves(SolveMoves), CurrentBoard).
+solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
+    currentBoardSolved(CurrentBoard),!.
 
-solve(CurrentBoard, [Next|T], SolveMoves) :-
+solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    allMoves(CurrentBoard, Boards),
+    \+visited(CurrentBoard),!,
+    assert(visited(CurrentBoard)),
+    allMoves((CurrentBoard, Moves), Boards),
     append(T, Boards, NextBoards),!,
     solve(Next,NextBoards, SolveMoves).
+solve((CurrentBoard,_), [Next|T], SolveMoves) :-
+    \+currentBoardSolved(CurrentBoard),
+    visited(CurrentBoard),!,
+    solve(Next,T, SolveMoves).
 
 currentBoardSolved(Board) :-
     member(robot(0,X,Y), Board),
