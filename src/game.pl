@@ -90,15 +90,15 @@ solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
 
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    %\+visited(CurrentBoard),!,
-    %assert(visited(CurrentBoard)),
+    \+visited(CurrentBoard),!,
+    asserta(visited(CurrentBoard)),
     allMoves((CurrentBoard, Moves), Boards),
     append(T, Boards, NextBoards),!,
     solve(Next,NextBoards, SolveMoves).
-%solve((CurrentBoard,_), [Next|T], SolveMoves) :-
-%    \+currentBoardSolved(CurrentBoard),
-%    visited(CurrentBoard),!,
-%    solve(Next,T, SolveMoves).
+solve((CurrentBoard,_), [Next|T], SolveMoves) :-
+    \+currentBoardSolved(CurrentBoard),
+    visited(CurrentBoard),!,
+    solve(Next,T, SolveMoves).
 
 currentBoardSolved(Board) :-
     member(robot(0,X,Y), Board),
