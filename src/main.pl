@@ -65,8 +65,6 @@ main :-
     atom_number(HeightAtom, Height),
     createMap(AantalRobots,Width, Height, B),!,
     boardToString(B, SB),!,
-    write(B),nl,
-    unique(B),
     write(SB),
     halt(0).
 
