@@ -64,7 +64,7 @@ cross_connector --> "\u254b".
 
 robot0 --> "\u25a3".
 robot1 --> "\u25a0".
-robot2 --> "\u250f".
+robot2 --> "\u25b2".
 robot3 --> "\u25c6".
 robot4 --> "\u25c7".
 robot5 --> "\u25c8".

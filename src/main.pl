@@ -33,6 +33,7 @@ main :-
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
+    %time(solve(B, Moves)),
     solve(B, Moves),
     write_solve(Moves),nl,
     halt(0).
@@ -64,6 +65,7 @@ main :-
     atom_number(WidthAtom, Width),
     atom_number(HeightAtom, Height),
     createMap(AantalRobots,Width, Height, B),!,
+    unique(B),
     boardToString(B, SB),!,
     write(SB),
     halt(0).

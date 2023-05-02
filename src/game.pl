@@ -1,4 +1,5 @@
 :- module(game, [zet/4, solve/2]).
+:- use_module(print).
 :- dynamic visited/1.
 
 zet(Board, Robot, d, NewBoard) :-
@@ -72,7 +73,8 @@ posibleMove(d).
 allMoves((Board,CurrentMoves), Boards) :-
     findall(Move, posibleMove(Move), Moves),
     findall(Robot, member(robot(Robot,_,_), Board), Robots),
-    findall((R,M), (member(M, Moves), member(R, Robots)), Pairs),
+    sort(Robots,RobotsSorted),
+    findall((R,M), (member(M, Moves), member(R, RobotsSorted)), Pairs),
     moves((Board,CurrentMoves), Pairs, Boards).
 
 moves((_,_), [], []).
@@ -87,19 +89,22 @@ solve(CurrentBoard, SolveMoves) :-
 
 solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
     currentBoardSolved(CurrentBoard),!.
-
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    \+visited(CurrentBoard),!,
-    assert(visited(CurrentBoard)),
+    boardToString(CurrentBoard, String),
+    \+visited(String),!,
+    %length(Moves, L),write(L),nl,
+    %write(String),
+    assert(visited(String)),
     allMoves((CurrentBoard, Moves), Boards),
     append(T, Boards, NextBoards),!,
     solve(Next,NextBoards, SolveMoves).
 solve((CurrentBoard,_), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    visited(CurrentBoard),!,
+    boardToString(CurrentBoard, String),
+    visited(String),!,
     solve(Next,T, SolveMoves).
 
 currentBoardSolved(Board) :-
     member(robot(0,X,Y), Board),
-    member(doel(X,Y), Board).
+    member(doel(X,Y), Board),!.

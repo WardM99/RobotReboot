@@ -1,7 +1,7 @@
 :- module(print, [boardToString/2, write_solve/1]).
 
 boardToString(Bord, S) :-
-    print_top_lijn(Bord, 0, S).
+    print_top_lijn(Bord, 0, S),!.
 
 print_top_lijn(Bord, Y, S) :-
     print_top_lijn_vakje(Bord, Y, 0, S).
@@ -10,24 +10,24 @@ print_top_lijn_vakje(Bord, Y, X, S) :-
     \+member(width(X), Bord),
     print_connector(Bord, Y, X, Connector),
     print_top_lijn_vakje_muur(Bord, Y, X, Muur),
-    string_concat(Connector, Muur, CM),
+    string_concat(Connector, Muur, CM),!,
     NX is X + 1,
     print_top_lijn_vakje(Bord, Y, NX, NextString),
-    string_concat(CM, NextString,S).
+    string_concat(CM, NextString,S),!.
 
 print_top_lijn_vakje(Bord, Y, X, S) :- 
     member(width(X), Bord),
     \+member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
-    string_concat(Connector, "\n", ConnectorNewline),
+    string_concat(Connector, "\n", ConnectorNewline),!,
     print_lijn(Bord, Y, NewString),
-    string_concat(ConnectorNewline,NewString,S).
+    string_concat(ConnectorNewline,NewString,S),!.
 
 print_top_lijn_vakje(Bord, Y, X, S) :- 
     member(width(X), Bord),
     member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
-    string_concat(Connector, "\n", S).
+    string_concat(Connector, "\n", S),!.
 
 print_top_lijn_vakje_muur(Bord, Y, X, S) :-
     NY is Y - 1,
@@ -47,18 +47,18 @@ print_lijn_vakje(Bord, Y, X, S) :-
     \+member(width(X), Bord),
     print_lijn_vakje_muur(Bord, Y, X, Muur),
     print_opvulling(Bord, Y, X, Opvulling),
-    string_concat(Muur, Opvulling, MO),
+    string_concat(Muur, Opvulling, MO),!,
     NX is X + 1,
     print_lijn_vakje(Bord, Y, NX, NextString),
-    string_concat(MO, NextString, S).
+    string_concat(MO, NextString, S),!.
 
 print_lijn_vakje(Bord, Y, X, S) :-
     member(width(X), Bord),
     print_lijn_vakje_muur(Bord, Y, X, Muur),
-    string_concat(Muur, "\n", MuurEnNewLine),
+    string_concat(Muur, "\n", MuurEnNewLine),!,
     NY is Y + 1,
     print_top_lijn(Bord, NY, NextString),
-    string_concat(MuurEnNewLine, NextString, S).
+    string_concat(MuurEnNewLine, NextString, S),!.
 
 print_lijn_vakje_muur(Bord, Y, X, S) :-
     NX is X - 1,
@@ -170,7 +170,7 @@ cross_connector("\u254b").
 
 robot(0,"\u25a3").
 robot(1,"\u25a0").
-robot(2,"\u250f").
+robot(2,"\u25b2").
 robot(3,"\u25c6").
 robot(4,"\u25c7").
 robot(5,"\u25c8").
