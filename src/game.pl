@@ -1,4 +1,4 @@
-:- module(game, [zet/4, solve/2]).
+:- module(game, [zet/4, solve/2,currentBoardSolved/1]).
 :- use_module(print).
 :- dynamic visited/1.
 
@@ -91,7 +91,7 @@ solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
     currentBoardSolved(CurrentBoard),!.
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    boardToString(CurrentBoard, String),
+    boardToString(false,CurrentBoard, String),
     \+visited(String),!,
     %length(Moves, L),write(L),nl,
     %write(String),
@@ -101,7 +101,7 @@ solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     solve(Next,NextBoards, SolveMoves).
 solve((CurrentBoard,_), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    boardToString(CurrentBoard, String),
+    boardToString(false,CurrentBoard, String),
     visited(String),!,
     solve(Next,T, SolveMoves).
 

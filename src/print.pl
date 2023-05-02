@@ -1,29 +1,31 @@
-:- module(print, [boardToString/2, write_solve/1]).
+:- module(print, [boardToString/3, write_solve/1]).
 
-boardToString(Bord, S) :-
-    print_top_lijn(Bord, 0, S),!.
+boardToString(true,[], "\033[5m\033[4m\033[38;5;101mC\033[38;5;102mo\033[38;5;103mn\033[38;5;104mg\033[38;5;105mr\033[38;5;106me\033[38;5;107m\033[38;5;108mt\033[38;5;109mu\033[38;5;110ml\033[38;5;111ma\033[38;5;112mt\033[38;5;113mi\033[38;5;114mo\033[38;5;115mn\033[38;5;116ms\033[0m\nPress [Enter] to continue").
 
-print_top_lijn(Bord, Y, S) :-
-    print_top_lijn_vakje(Bord, Y, 0, S).
+boardToString(EscapeSequences, Bord, S) :-
+    print_top_lijn(EscapeSequences, Bord, 0, S),!.
 
-print_top_lijn_vakje(Bord, Y, X, S) :- 
+print_top_lijn(EscapeSequences, Bord, Y, S) :-
+    print_top_lijn_vakje(EscapeSequences, Bord, Y, 0, S).
+
+print_top_lijn_vakje(EscapeSequences, Bord, Y, X, S) :- 
     \+member(width(X), Bord),
     print_connector(Bord, Y, X, Connector),
     print_top_lijn_vakje_muur(Bord, Y, X, Muur),
     string_concat(Connector, Muur, CM),!,
     NX is X + 1,
-    print_top_lijn_vakje(Bord, Y, NX, NextString),
+    print_top_lijn_vakje(EscapeSequences, Bord, Y, NX, NextString),
     string_concat(CM, NextString,S),!.
 
-print_top_lijn_vakje(Bord, Y, X, S) :- 
+print_top_lijn_vakje(EscapeSequences, Bord, Y, X, S) :- 
     member(width(X), Bord),
     \+member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
     string_concat(Connector, "\n", ConnectorNewline),!,
-    print_lijn(Bord, Y, NewString),
+    print_lijn(EscapeSequences, Bord, Y, NewString),
     string_concat(ConnectorNewline,NewString,S),!.
 
-print_top_lijn_vakje(Bord, Y, X, S) :- 
+print_top_lijn_vakje(_, Bord, Y, X, S) :- 
     member(width(X), Bord),
     member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
@@ -40,24 +42,24 @@ print_top_lijn_vakje_muur(Bord, Y, X, S) :-
     horizontal(S).
 
 
-print_lijn(Bord, Y, S) :-
-    print_lijn_vakje(Bord, Y, 0, S).
+print_lijn(EscapeSequences, Bord, Y, S) :-
+    print_lijn_vakje(EscapeSequences, Bord, Y, 0, S).
 
-print_lijn_vakje(Bord, Y, X, S) :-
+print_lijn_vakje(EscapeSequences, Bord, Y, X, S) :-
     \+member(width(X), Bord),
     print_lijn_vakje_muur(Bord, Y, X, Muur),
-    print_opvulling(Bord, Y, X, Opvulling),
+    print_opvulling(EscapeSequences, Bord, Y, X, Opvulling),
     string_concat(Muur, Opvulling, MO),!,
     NX is X + 1,
-    print_lijn_vakje(Bord, Y, NX, NextString),
+    print_lijn_vakje(EscapeSequences, Bord, Y, NX, NextString),
     string_concat(MO, NextString, S),!.
 
-print_lijn_vakje(Bord, Y, X, S) :-
+print_lijn_vakje(EscapeSequences, Bord, Y, X, S) :-
     member(width(X), Bord),
     print_lijn_vakje_muur(Bord, Y, X, Muur),
     string_concat(Muur, "\n", MuurEnNewLine),!,
     NY is Y + 1,
-    print_top_lijn(Bord, NY, NextString),
+    print_top_lijn(EscapeSequences, Bord, NY, NextString),
     string_concat(MuurEnNewLine, NextString, S),!.
 
 print_lijn_vakje_muur(Bord, Y, X, S) :-
@@ -146,15 +148,37 @@ print_connector(Bord, Y, X, S) :-
 print_connector(_, _, _, S) :- nsbp(S).
 
 
-print_opvulling(Bord, Y, X, S) :- 
+print_opvulling(false, Bord, Y, X, S) :- 
     member(robot(R, X,Y),Bord),
     robot(R,S).
-print_opvulling(Bord, Y, X, S) :- 
+print_opvulling(false, Bord, Y, X, S) :- 
     member(doel(X,Y),Bord),
     doel(S).
-print_opvulling(_,_,_,S) :-
+print_opvulling(true, Bord, Y, X, S) :- 
+    member(robot(0, X,Y),Bord),
+    robot(0,Robot0),!,
+    blinking(Bord,0,Blink),
+    atomics_to_string([Blink,"\033[38;5;76m",Robot0,"\033[0m"], S).
+print_opvulling(true, Bord, Y, X, S) :- 
+    member(robot(R, X,Y),Bord),
+    robot(R,RobotS),!,
+    blinking(Bord,R,Blink),
+    atomics_to_string([Blink,"\033[38;5;160m",RobotS,"\033[0m"], S).
+print_opvulling(true, Bord, Y, X, S) :- 
+    member(doel(X,Y),Bord),
+    doel(D),
+    atomics_to_string(["\033[38;5;76m",D,"\033[0m"], S).
+print_opvulling(_,_,_,_,S) :-
     nsbp(S).
 
+
+
+blinking(Board,Robot,"\033[5m"):-
+    member(currentRobot(IndexRobot),Board),
+    findall(I,(member(robot(I,_,_),Board)),AllRobots),
+    sort(AllRobots,RobotsSorted),
+    nth0(IndexRobot, RobotsSorted, Robot),!.
+blinking(_,_,"").
 
 horizontal("\u2501").
 vertical("\u2503").
