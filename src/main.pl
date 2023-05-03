@@ -6,6 +6,7 @@
 :- use_module(map).
 
 
+
 %!  next_world(?X:int, +I:string, -Y:int) is det
 %!  next_world(+X:int, ?I:string, -Y:int) is det
 %   
@@ -75,7 +76,7 @@ picture(N, M) :-
 
 % Solve
 main :-
-    current_prolog_flag(argv, ['--solve'|_]),
+    current_prolog_flag(argv, ['--solve'|_]),!,
     read_string(user_input, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
@@ -84,11 +85,21 @@ main :-
     write_solve(Moves),nl,
     halt(0).
 
+main :-
+    current_prolog_flag(argv, ['--solve_time'|_]),!,
+    read_string(user_input, _, Str),
+    string_codes(Str, Codes),
+    parse(B, Codes, []),
+    time(solve(B, _)),!,
+    %solve(B, Moves),
+    %write_solve(Moves),nl,
+    halt(0).
+
 % Test
 main :- 
     current_prolog_flag(argv, Argv),
     member(Opt, Argv),
-    atom_concat('--test=[', TestOpt, Opt), % check if --test option is present
+    atom_concat('--test=[', TestOpt, Opt),!,% check if --test option is present
     atom_concat(RandMOpt, ']', TestOpt),
     atomic_list_concat([RobotAtom,Move], ',', RandMOpt),    
     atom_number(RobotAtom, Robot),
@@ -104,7 +115,7 @@ main :-
 main :-
     current_prolog_flag(argv, Argv),
     member(Opt, Argv),
-    atom_concat('--gen=[', TestOpt, Opt), % check if --test option is present
+    atom_concat('--gen=[', TestOpt, Opt),!, % check if --test option is present
     atom_concat(RandMOpt, ']', TestOpt),
     atomic_list_concat([AantalRobotsAtom,WidthAtom, HeightAtom], ',', RandMOpt),
     atom_number(AantalRobotsAtom, AantalRobots),
@@ -119,7 +130,7 @@ main :-
 % default: TODO: should be empty
 main:-
     %test_handle_input.
-    open('random7.txt', read, X),
+    open('random2.txt', read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),

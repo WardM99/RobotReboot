@@ -1,9 +1,13 @@
-:- module(print, [boardToString/3, write_solve/1]).
+:- module(print, [boardToString/3, write_solve/1, listBoard/2]).
 
 boardToString(true,[], "\033[5m\033[4m\033[38;5;101mC\033[38;5;102mo\033[38;5;103mn\033[38;5;104mg\033[38;5;105mr\033[38;5;106me\033[38;5;107m\033[38;5;108mt\033[38;5;109mu\033[38;5;110ml\033[38;5;111ma\033[38;5;112mt\033[38;5;113mi\033[38;5;114mo\033[38;5;115mn\033[38;5;116ms\033[0m\nPress [Enter] to continue").
 
 boardToString(EscapeSequences, Bord, S) :-
-    print_top_lijn(EscapeSequences, Bord, 0, S),!.
+    print_top_lijn(EscapeSequences, Bord, 0, List),!,
+    atomics_to_string(List, S).
+
+listBoard(Board, List) :-
+    print_top_lijn(false,Board,0,List),!.
 
 print_top_lijn(EscapeSequences, Bord, Y, S) :-
     print_top_lijn_vakje(EscapeSequences, Bord, Y, 0, S).
@@ -12,24 +16,22 @@ print_top_lijn_vakje(EscapeSequences, Bord, Y, X, S) :-
     \+member(width(X), Bord),
     print_connector(Bord, Y, X, Connector),
     print_top_lijn_vakje_muur(Bord, Y, X, Muur),
-    string_concat(Connector, Muur, CM),!,
     NX is X + 1,
     print_top_lijn_vakje(EscapeSequences, Bord, Y, NX, NextString),
-    string_concat(CM, NextString,S),!.
+    S=[Connector,Muur|NextString].
 
 print_top_lijn_vakje(EscapeSequences, Bord, Y, X, S) :- 
     member(width(X), Bord),
     \+member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
-    string_concat(Connector, "\n", ConnectorNewline),!,
     print_lijn(EscapeSequences, Bord, Y, NewString),
-    string_concat(ConnectorNewline,NewString,S),!.
+    S=[Connector,"\n"|NewString].
 
 print_top_lijn_vakje(_, Bord, Y, X, S) :- 
     member(width(X), Bord),
     member(height(Y), Bord),
     print_connector(Bord, Y, X, Connector),
-    string_concat(Connector, "\n", S),!.
+    S=[Connector,"\n"].
 
 print_top_lijn_vakje_muur(Bord, Y, X, S) :-
     NY is Y - 1,
@@ -46,21 +48,19 @@ print_lijn(EscapeSequences, Bord, Y, S) :-
     print_lijn_vakje(EscapeSequences, Bord, Y, 0, S).
 
 print_lijn_vakje(EscapeSequences, Bord, Y, X, S) :-
-    \+member(width(X), Bord),
+    \+member(width(X), Bord),!,
     print_lijn_vakje_muur(Bord, Y, X, Muur),
     print_opvulling(EscapeSequences, Bord, Y, X, Opvulling),
-    string_concat(Muur, Opvulling, MO),!,
     NX is X + 1,
     print_lijn_vakje(EscapeSequences, Bord, Y, NX, NextString),
-    string_concat(MO, NextString, S),!.
+    S=[Muur,Opvulling|NextString].
 
 print_lijn_vakje(EscapeSequences, Bord, Y, X, S) :-
-    member(width(X), Bord),
+    member(width(X), Bord),!,
     print_lijn_vakje_muur(Bord, Y, X, Muur),
-    string_concat(Muur, "\n", MuurEnNewLine),!,
     NY is Y + 1,
     print_top_lijn(EscapeSequences, Bord, NY, NextString),
-    string_concat(MuurEnNewLine, NextString, S),!.
+    S=[Muur,"\n"|NextString].
 
 print_lijn_vakje_muur(Bord, Y, X, S) :-
     NX is X - 1,

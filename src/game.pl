@@ -91,7 +91,7 @@ solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
     currentBoardSolved(CurrentBoard),!.
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    boardToString(false,CurrentBoard, String),
+    boardOnlyRobots(CurrentBoard, String),
     \+visited(String),!,
     %length(Moves, L),write(L),nl,
     %write(String),
@@ -101,10 +101,15 @@ solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
     solve(Next,NextBoards, SolveMoves).
 solve((CurrentBoard,_), [Next|T], SolveMoves) :-
     \+currentBoardSolved(CurrentBoard),
-    boardToString(false,CurrentBoard, String),
+    boardOnlyRobots(CurrentBoard, String),
     visited(String),!,
     solve(Next,T, SolveMoves).
 
 currentBoardSolved(Board) :-
     member(robot(0,X,Y), Board),
     member(doel(X,Y), Board),!.
+
+
+boardOnlyRobots(Board, OnlyRobots) :-
+    findall(robot(R,X,Y), (member(robot(R,X,Y),Board)),OnlyRobotsUnstorted),
+    sort(OnlyRobotsUnstorted, OnlyRobots).
