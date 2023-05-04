@@ -45,6 +45,6 @@ handleInput(Move) :-
     ;   Code is 119,!,Move is 1 % w = up
     ;   Code is 97,!,Move is 3  % a = left
     ;   Code is 9,!,Move is 5   %tab = changeRobot
-    ;   Code is 27,!,Move is 0  %ESC = stop
+    ;   Code is 32,!,Move is 0  %ESC = stop
     ;   !,Move is -1
     ).

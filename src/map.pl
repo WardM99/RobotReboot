@@ -1,12 +1,12 @@
 :- module(map, [createMap/4]).
 
-createMap(AantalRobots, Width, Height, Board) :-
+createMap(AantalRobots, Width, Height, [width(Width), height(Height)| Board]) :-
     createBoarder(Width, Height, BoarderBoard),
-    createWalls(Width, Height, 0, 0, WallBoard),
-    append(BoarderBoard, WallBoard, WallsBoard),
-    placeDoel(Width, Height, WallsBoard, BoardWithDoel),
+    %createWalls(Width, Height, 0, 0, WallBoard),
+    %append(BoarderBoard, WallBoard, WallsBoard),
     placeRobots(AantalRobots,Width,Height, 0, Robots),
-    append([height(Height),width(Width)|Robots], BoardWithDoel, Board).
+    append(Robots, BoarderBoard, BoardWithRobots),
+    placeDoel(Width, Height, BoardWithRobots, Board),!.
 
 createBoarder(Width, Height, Board) :-
     createHorizontalBoarder(Width, 0, 0, UpperBoarderBoard),!,
@@ -71,13 +71,48 @@ makeVerticalWall(X,Y,1,[muur(NX,Y,X,Y)]) :-
 makeVerticalWall(_,_,_,[]).
 
 placeDoel(W, H, Board, [(doel(X,Y))|Board]) :-
-    random(0,W,X),
-    random(0,H,Y).
+    findall(
+        co(X1,Y1),
+        (   
+            pred(W,Xs),
+            pred(H,Ys),
+            member(X1,Xs),
+            member(Y1,Ys),
+            \+member(robot(_,X1,Y1),
+            Board)
+        )
+        ,AllFreePlaces
+    ),
+    length(AllFreePlaces,L),
+    random(0,L,I),!,
+    nth0(I, AllFreePlaces, co(X,Y)).
 
 placeRobots(AantalRobots, _, _, AantalRobots, []).
 placeRobots(AantalRobots, W, H, RobotIndex, BoardWithRobots) :-
-    random(0,W,X),
-    random(0,H,Y),
     NextRobot is RobotIndex + 1,
     placeRobots(AantalRobots, W, H, NextRobot, NewBoard),
+    getRandomPlace(NewBoard,W,H,X,Y),
     append([robot(RobotIndex,X,Y)], NewBoard, BoardWithRobots).
+
+
+getRandomPlace(CurrentRobots,W,H,X,Y):-
+    findall(
+        co(X1,Y1),
+        (   
+            pred(W,Xs),
+            pred(H,Ys),
+            member(X1,Xs),
+            member(Y1,Ys),
+            \+member(robot(_,X1,Y1),
+            CurrentRobots)
+        )
+        ,AllFreePlaces
+    ),
+    length(AllFreePlaces,L),
+    random(0,L,I),
+    nth0(I, AllFreePlaces, co(X,Y)).
+
+pred(1, [0]):-!.
+pred(N, [N1|T]) :-
+    N1 is N-1,
+    pred(N1, T).

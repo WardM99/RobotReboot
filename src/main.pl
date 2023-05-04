@@ -130,7 +130,7 @@ main :-
 % default: TODO: should be empty
 main:-
     %test_handle_input.
-    open('random2.txt', read, X),
+    open('random8.txt', read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
