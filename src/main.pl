@@ -115,14 +115,15 @@ main :-
 main :-
     current_prolog_flag(argv, Argv),
     member(Opt, Argv),
-    atom_concat('--gen=[', TestOpt, Opt),!, % check if --test option is present
+    atom_concat('--gen=[', TestOpt, Opt),!, % check if --gen option is present
     atom_concat(RandMOpt, ']', TestOpt),
     atomic_list_concat([AantalRobotsAtom,WidthAtom, HeightAtom], ',', RandMOpt),
     atom_number(AantalRobotsAtom, AantalRobots),
     atom_number(WidthAtom, Width),
     atom_number(HeightAtom, Height),
     createMap(AantalRobots,Width, Height, B),!,
-    unique(B),
+    %unique(B),
+    %member(doel(X1,Y1), B), write(X1),write("-"),write(Y1),nl,
     boardToString(false, B, SB),!,
     write(SB),
     halt(0).
@@ -130,7 +131,7 @@ main :-
 % default: TODO: should be empty
 main:-
     %test_handle_input.
-    open('random8.txt', read, X),
+    open('random12.txt', read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
