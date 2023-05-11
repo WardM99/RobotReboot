@@ -1,6 +1,8 @@
 :- module(game, [zet/4, solve/2,currentBoardSolved/1]).
-:- use_module(print).
+:- use_module(library(clpfd)).
+
 :- dynamic visited/1.
+:- dynamic pairs/1.
 
 zet(Board, Robot, d, NewBoard) :-
     member(robot(Robot, X,Y), Board),
@@ -59,55 +61,48 @@ right(Board, X, Y, NewX) :-
     NX is X + 1,
     right(Board, NX, Y, NewX).
 
-replace(Board, Robot, OldX, OldY, NewX, NewY, NewBoard) :-
-    select(robot(Robot, OldX, OldY), Board, Board2),
-    append([robot(Robot, NewX, NewY)], Board2, NewBoard).
+replace(Board, Robot, OldX, OldY, NewX, NewY, [robot(Robot, NewX, NewY)|Board2]) :-
+    select(robot(Robot, OldX, OldY), Board, Board2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-posibleMove(l).
-posibleMove(r).
-posibleMove(u).
-posibleMove(d).
-
 
 allMoves((Board,CurrentMoves), Boards) :-
-    findall(Move, posibleMove(Move), Moves),
-    findall(Robot, member(robot(Robot,_,_), Board), Robots),
-    sort(Robots,RobotsSorted),
-    findall((R,M), (member(M, Moves), member(R, RobotsSorted)), Pairs),
+    %findall(Move, posibleMove(Move), Moves),
+    pairs(Pairs),
     moves((Board,CurrentMoves), Pairs, Boards).
 
 moves((_,_), [], []).
-moves((Board,Moves), [(R,M)|Tail], Boards) :-
+moves((Board,Moves), [(R,M)|Tail], [(NewBoard,[(R,M)|Moves])|NextBoards]) :-
     zet(Board, R, M, NewBoard),
-    moves((Board,Moves),Tail, NextBoards),
-    append([(NewBoard,[(R,M)|Moves])], NextBoards, Boards).
+    moves((Board,Moves),Tail, NextBoards).
 
 solve(CurrentBoard, SolveMoves) :-
+    findall(Robot, member(robot(Robot,_,_), CurrentBoard), Robots),
+    sort(Robots,RobotsSorted),
+    findall((R,M), (member(M, [l,r,u,d]), member(R, RobotsSorted)), Pairs),
+    assert(pairs(Pairs)),
     allMoves((CurrentBoard, []), [Next|T]),
     solve(Next, T, SolveMoves).
 
 solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
     currentBoardSolved(CurrentBoard),!.
 solve((CurrentBoard,Moves), [Next|T], SolveMoves) :-
-    \+currentBoardSolved(CurrentBoard),
     boardOnlyRobots(CurrentBoard, String),
     \+visited(String),!,
     %length(Moves, L),write(L),nl,
-    %write(String),
     assert(visited(String)),
-    allMoves((CurrentBoard, Moves), Boards),
-    append(T, Boards, NextBoards),!,
+    appendAllMoves(CurrentBoard, Moves, T, NextBoards),!,
     solve(Next,NextBoards, SolveMoves).
-solve((CurrentBoard,_), [Next|T], SolveMoves) :-
-    \+currentBoardSolved(CurrentBoard),
-    boardOnlyRobots(CurrentBoard, String),
-    visited(String),!,
-    solve(Next,T, SolveMoves).
+solve((_,_), [Next|T], SolveMoves) :-
+    !,solve(Next,T, SolveMoves).
 
 currentBoardSolved(Board) :-
     member(robot(0,X,Y), Board),
     member(doel(X,Y), Board),!.
+
+appendAllMoves(CurrentBoard, Moves,T, NextBoards):-
+    allMoves((CurrentBoard, Moves), Boards),
+    append(T, Boards, NextBoards).
 
 
 boardOnlyRobots(Board, OnlyRobots) :-

@@ -122,16 +122,16 @@ main :-
     atom_number(WidthAtom, Width),
     atom_number(HeightAtom, Height),
     createMap(AantalRobots,Width, Height, B),!,
-    %unique(B),
-    %member(doel(X1,Y1), B), write(X1),write("-"),write(Y1),nl,
     boardToString(false, B, SB),!,
     write(SB),
+    solve(B, Moves),
+    write_solve(Moves),nl,
     halt(0).
 
 % default: TODO: should be empty
 main:-
     %test_handle_input.
-    open('random12.txt', read, X),
+    open('random15.txt', read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
