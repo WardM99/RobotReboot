@@ -131,11 +131,12 @@ main :-
 % default: TODO: should be empty
 main:-
     %test_handle_input.
-    open('random15.txt', read, X),
+    open('map.txt', read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
-    animate([currentRobot(0)|B],picture,next_world).
+    write(B),nl.
+    %animate([currentRobot(0)|B],picture,next_world).
 
 unique([]).
 unique([X|Xs]) :-
