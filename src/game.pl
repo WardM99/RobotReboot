@@ -6,26 +6,26 @@
 zet(Board, Robot, d, NewBoard) :-
     memberchk(robot(Robot, X,Y), Board),
     down(Board, X, Y, NewY),
-    replace(Board, Robot, X, Y, X, NewY, NewBoard).
+    replace(Board, Robot, X, Y, X, NewY, NewBoard),!.
 zet(Board, Robot, u, NewBoard) :-
     memberchk(robot(Robot, X,Y), Board),
     up(Board, X, Y, NewY),
-    replace(Board, Robot, X, Y, X, NewY, NewBoard).
+    replace(Board, Robot, X, Y, X, NewY, NewBoard),!.
 zet(Board, Robot, l, NewBoard) :-
     memberchk(robot(Robot, X,Y), Board),
     left(Board, X, Y, NewX),
-    replace(Board, Robot, X, Y, NewX, Y, NewBoard).
+    replace(Board, Robot, X, Y, NewX, Y, NewBoard),!.
 zet(Board, Robot, r, NewBoard) :-
     memberchk(robot(Robot, X,Y), Board),
     right(Board, X, Y, NewX),
-    replace(Board, Robot, X, Y, NewX, Y, NewBoard).
+    replace(Board, Robot, X, Y, NewX, Y, NewBoard),!.
 
 down(Board, X,Y,Y) :-
     NY is Y + 1,
-    member(muur(X,NY,X,Y), Board).
+    memberchk(muur(X,NY,X,Y), Board).
 down(Board, X,Y,Y) :-
     NY is Y + 1,
-    member(robot(_,X,NY), Board).
+    memberchk(robot(_,X,NY), Board).
 down(Board, X, Y, NewY) :-
     NY is Y + 1,
     down(Board, X, NY, NewY).
@@ -80,7 +80,7 @@ solve(CurrentBoard, SolveMoves) :-
     findall((R,M), (member(M, [l,r,u,d]), member(R, RobotsSorted)), Pairs),
     assert(pairs(Pairs)),
     allMoves((CurrentBoard, []), [Next|T]),
-    solve(Next, T, SolveMoves).
+    solve(Next, T, SolveMoves),!.
 
 solve((CurrentBoard,SolveMoves), _, SolveMoves) :-
     currentBoardSolved(CurrentBoard),!.

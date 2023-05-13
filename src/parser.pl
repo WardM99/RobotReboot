@@ -3,7 +3,7 @@
 
 % muur(X1, Y1, X2, Y2).
 
-parse(Board) --> top_vakje(Board, 0 ,0).
+parse(Board) --> top_vakje(Board, 0 ,0),!.
 
 top_vakje(Board, Y, _) --> bottom_right_corner, new_line, {Board = [height(Y)]}.
 top_vakje(Board, 0, X) --> connector, new_line, !, {append([width(X)], Board2, Board)}, vakje(Board2, 0, 0).
