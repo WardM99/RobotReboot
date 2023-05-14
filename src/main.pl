@@ -11,8 +11,6 @@
 %!  next_world(+X:int, ?I:string, -Y:int) is det
 %   
 %   Based on the current world and command-line input, outputs the new world.
-%next_world(_, "R", 0).
-%next_world(X, _, Y) :- Y is X + 1.
 
 next_world([], 10, []) :- 
     clear(Clear),
@@ -63,16 +61,12 @@ checkSolved(X,[]) :-
     currentBoardSolved(X),!.
 checkSolved(X,X).
 
-%!  next_world(?N, ?Picture) is det
+%!  picture(?N, ?Picture) is det
 %   
 %   True if *Picture* is the screen representation of the world *N*.
 
 picture(N, M) :-
     boardToString(true, N, M).
-
-% main :- animate(0,picture,next_world), halt.
-
-%main :- test_printen, nl, halt.
 
 % Solve
 main :-
@@ -142,19 +136,6 @@ main :-
     parse(B, Codes, []),
     animate([currentRobot(0)|B],picture,next_world).
 
-% default: TODO: should be empty
+% default
 main:-
     halt(0).
-
-unique([]).
-unique([X|Xs]) :-
-    unique(Xs),
-    \+member(X, Xs).
-unique([X|Xs]) :-
-    member(X,Xs),
-    write(X),nl.
-
-test_handle_input :-
-    get_single_char(Char),
-    write(Char),nl,
-    test_handle_input.
