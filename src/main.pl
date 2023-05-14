@@ -128,15 +128,23 @@ main :-
     write_solve(Moves),nl,
     halt(0).
 
-% default: TODO: should be empty
-main:-
-    %test_handle_input.
-    open('map.txt', read, X),
+
+% Interactieve modus
+main :-
+    current_prolog_flag(argv, Argv),
+    member(Opt, Argv),
+    atom_concat('--game=[', TestOpt, Opt),!, % check if --gen option is present
+    atom_concat(Path, ']', TestOpt),
+    write(Path),nl,
+    open(Path, read, X),
     read_string(X, _, Str),
     string_codes(Str, Codes),
     parse(B, Codes, []),
-    write(B),nl.
-    %animate([currentRobot(0)|B],picture,next_world).
+    animate([currentRobot(0)|B],picture,next_world).
+
+% default: TODO: should be empty
+main:-
+    halt(0).
 
 unique([]).
 unique([X|Xs]) :-
