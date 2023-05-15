@@ -28,12 +28,13 @@ draw(M) :-
 % ANSI ESC code to clear entire screen
 clear("\x1B\c").
 
-% ANSI ESC Code to colour text red
+% ANSI ESC Code to colour of text
 red("\033[38;5;160m").
 white("\033[38;5;255m").
 blink("\033[5m").
 resetBlink("\033[25m").
 
+% van een input de juiste actie doorgeven
 handleInput(Move) :-
     get_single_char(Code),
     (

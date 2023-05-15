@@ -4,7 +4,7 @@
 :- dynamic buren/2.
 
 
-
+% het map maken volgens de stappen
 createMap(AantalRobots, Width, Height, [width(Width), height(Height)| Board]) :-
     createBoarder(Width, Height, BoarderBoard),
     placeDoel(Width,Height,BoarderBoard, BoardWithDoel),
@@ -12,6 +12,7 @@ createMap(AantalRobots, Width, Height, [width(Width), height(Height)| Board]) :-
     placeExtraMuren(BoardWithRobot0, NietGebruiken, Width, Height, BoardWithMuren),
     placeRobots(BoardWithMuren,AantalRobots,Width,Height, 1, Board).
 
+% Muren plaatsen dat niet in het pad zitten
 placeExtraMuren(Bord, NietGebruiken, Width, Height, BoardWithMuren) :-
     WidthPrev is Width - 1,
     HeightPrev is Height - 1,
@@ -28,7 +29,7 @@ placeExtraMuren(Bord, NietGebruiken, Width, Height, BoardWithMuren) :-
     coordsToMuren(AllCoords,R,Muren),
     append(Bord,Muren,BoardWithMuren).
 
-
+% van coördinaten overgaan naar muren
 coordsToMuren([],_,[]).
 coordsToMuren([co(X,Y)|T], 0, [muur(X,Y,Xprev,Y)|Muren]) :-
     Xprev is X - 1,
@@ -50,24 +51,26 @@ coordsToMuren([_|T], _, Muren) :-
     random(0,10, R),
     coordsToMuren(T, R, Muren).
 
+% het stappen voor het bepalen van de startpositie van robot0
 placeRobot0(Board, Width, Height, NewBoard,NietGebruiken) :-
     member(doel(Xdoel,Ydoel), Board),
-    test(Board,3,0, Xdoel, Ydoel,Width, Height, [],Muren,NietGebruiken),
+    getStartPostitionRobot0(Board,3,0, Xdoel, Ydoel,Width, Height, [],Muren,NietGebruiken),
     append(Board, Muren, NewBoard).
 
-test(_, 0, _,Xdoel, Ydoel, _,_,NietGebruiken,[robot(0,Xdoel, Ydoel)],NietGebruiken) :-!. % stoppen, de 10 bewegingen zijn op!
-test(Bord,Aantal, PrevMove, Xdoel, Ydoel, Width, Height,NietGebruiken, [Muur|NextMuren],NietGebruikenTotaal) :-
+% het algoritme voor de startpositie van robot0 te bepalen
+getStartPostitionRobot0(_, 0, _,Xdoel, Ydoel, _,_,NietGebruiken,[robot(0,Xdoel, Ydoel)],NietGebruiken) :-!. % stoppen, de bewegingen zijn op!
+getStartPostitionRobot0(Bord,Aantal, PrevMove, Xdoel, Ydoel, Width, Height,NietGebruiken, [Muur|NextMuren],NietGebruikenTotaal) :-
     getmove(PrevMove, Move),
     muurRondDoel(Xdoel, Ydoel, Move, Muur),
     getNextCordinat(Xdoel, Ydoel, Move, Width, Height, NietGebruiken,Xnext, Ynext),
     NewAantal is Aantal - 1,
     nieuweNietGebruiken(NietGebruiken,Xdoel, Ydoel, Xnext, Ynext, Move, NewNietGebruiken),
-    test(Bord, NewAantal, Move, Xnext, Ynext, Width, Height, NewNietGebruiken, NextMuren, NietGebruikenTotaal).
-test(Bord,_, _,Xdoel, Ydoel, _, _,NietGebruiken,[robot(0,Xrobot, Yrobot)],NietGebruiken) :- % stoppen, kan niet meer bewegen!
+    getStartPostitionRobot0(Bord, NewAantal, Move, Xnext, Ynext, Width, Height, NewNietGebruiken, NextMuren, NietGebruikenTotaal).
+getStartPostitionRobot0(Bord,_, _,Xdoel, Ydoel, _, _,NietGebruiken,[robot(0,Xrobot, Yrobot)],NietGebruiken) :- % stoppen, kan niet meer bewegen!
     \+member(doel(Xdoel, Ydoel), Bord),
     Xrobot is Xdoel,
     Yrobot is Ydoel.
-test(Bord,Aantal, PrevMove,Xdoel, Ydoel, Width, Height,NietGebruiken,[Muur|NextMuren],NietGebruikenTotaal) :- % gebeurt alleen het doel tegen een muur is, en de eerste move gekozen is dat het niet meer beweegt
+getStartPostitionRobot0(Bord,Aantal, PrevMove,Xdoel, Ydoel, Width, Height,NietGebruiken,[Muur|NextMuren],NietGebruikenTotaal) :- % gebeurt alleen het doel tegen een muur is, en de eerste move gekozen is dat het niet meer beweegt
     member(doel(Xdoel, Ydoel), Bord),
     possiblemoves(PrevMove, Moves),
     findall(
@@ -83,8 +86,9 @@ test(Bord,Aantal, PrevMove,Xdoel, Ydoel, Width, Height,NietGebruiken,[Muur|NextM
     getNextCordinat(Xdoel, Ydoel, Move, Width, Height, NietGebruiken,Xnext, Ynext),
     NewAantal is Aantal - 1,
     nieuweNietGebruiken(NietGebruiken,Xdoel, Ydoel, Xnext, Ynext, Move, NewNietGebruiken),
-    test(Bord, NewAantal, Move, Xnext, Ynext, Width, Height, NewNietGebruiken, NextMuren, NietGebruikenTotaal).
+    getStartPostitionRobot0(Bord, NewAantal, Move, Xnext, Ynext, Width, Height, NewNietGebruiken, NextMuren, NietGebruikenTotaal).
 
+% Coördinaten toevoegen aan een lijst dat niet meer mag gebruikt worden
 nieuweNietGebruiken(NietGebruiken, Xdoel, Ydoel, _, Ynext, u, NewNietGebruiken) :-
     findall(
         co(Xdoel, Y),
@@ -116,6 +120,7 @@ nieuweNietGebruiken(NietGebruiken, Xdoel, Ydoel, Xnext, _, r, NewNietGebruiken) 
 
 nieuweNietGebruiken(NietGebruiken, _, _, _, _, _, NietGebruiken).
 
+% Het volgende coördinaat bepalen voor het algoritme
 getNextCordinat(Xdoel, Ydoel, u, _, _, NietGebruiken, Xdoel, Yrand) :-
     YdoelPrev is Ydoel - 1,
     findall(
@@ -164,6 +169,7 @@ getNextCordinat(Xdoel, Ydoel, r, Width, _, NietGebruiken, Xrand, Ydoel):-
     ),
     random_member(co(Xrand, Ydoel), AllCoords).
 
+% een muur plaatsen in de tegensgestelde richting van een doel coördinaat
 muurRondDoel(Xdoel, Ydoel, u, muur(Xdoel, Ynext,Xdoel, Ydoel)) :-
     Ynext is Ydoel + 1.
 muurRondDoel(Xdoel, Ydoel, d, muur(Xdoel, Ydoel,Xdoel, Yprev)) :-
@@ -173,16 +179,19 @@ muurRondDoel(Xdoel, Ydoel, l, muur(Xnext, Ydoel,Xdoel, Ydoel)) :-
 muurRondDoel(Xdoel, Ydoel, r, muur(Xdoel, Ydoel,Xprev, Ydoel)) :-
     Xprev is Xdoel - 1.
 
+% een nieuwe random richting krijgen
 getmove(PreviousMove, NewMove) :-
     possiblemoves(PreviousMove, Moves),
     random_member(NewMove, Moves).
 
+% de mogelijke zetten na een zet
 possiblemoves(l, [u,d]).
 possiblemoves(r, [u,d]).
 possiblemoves(d, [l,r]).
 possiblemoves(u, [l,r]).
 possiblemoves(0, [u,d,l,r]).
 
+% het maken van een rand rond het bord
 createBoarder(Width, Height, Board) :-
     createHorizontalBoarder(Width, 0, 0, UpperBoarderBoard),!,
     createHorizontalBoarder(Width, Height, 0, LowerBoarderBoard),!,
@@ -192,6 +201,7 @@ createBoarder(Width, Height, Board) :-
     append(LeftBoarderBoard,RightBoarderBoard,VerticalBoarders),
     append(HoriontalBoarders,VerticalBoarders, Board).
 
+% de horizontale randen maken
 createHorizontalBoarder(Width, Y, Xlimit, [muur(Xlimit,Y,Xlimit,PY)]) :-
     Xlimit is Width - 1,
     PY is Y - 1.
@@ -200,6 +210,8 @@ createHorizontalBoarder(Width, Y, X, Board) :-
     PY is Y - 1,
     createHorizontalBoarder(Width, Y, NX, NextBoard),!,
     append([muur(X,Y,X,PY)], NextBoard, Board).
+
+% de verticale randen maken
 createVerticalBoarder(Height, Ylimit, X, [muur(X, Ylimit, PX, Ylimit)]) :-
     Ylimit is Height - 1,
     PX is X - 1.
@@ -209,9 +221,10 @@ createVerticalBoarder(Height, Y, X, Board) :-
     createVerticalBoarder(Height, NY, X, NextBoard),!,
     append([muur(X,Y,PX,Y)], NextBoard, Board).
 
+% een doel plaatsen op een random locatie
 placeDoel(W, H, Board, [(doel(X,Y))|Board]) :-
-    pred(W,Xs),
-    pred(H,Ys),
+    listOfNnumbers(W,Xs),
+    listOfNnumbers(H,Ys),
     findall(
         co(X1,Y1),
         (   
@@ -222,20 +235,20 @@ placeDoel(W, H, Board, [(doel(X,Y))|Board]) :-
     ),
     random_member(co(X,Y),AllFreePlaces),!.
 
+% de andere robots plaatsen op random locaties
 placeRobots(B,AantalRobots, _, _, AantalRobots, B).
 placeRobots(Board, AantalRobots, W, H, RobotIndex, [robot(RobotIndex,X,Y)|NewBoard]) :-
     NextRobot is RobotIndex + 1,
     placeRobots(Board, AantalRobots, W, H, NextRobot, NewBoard),
     getRandomPlace(NewBoard,W,H,X,Y).
-    %append([robot(RobotIndex,X,Y)], NewBoard, BoardWithRobots).
 
-
+% een random plaats krijgen waar nog geen andere opvulling staat buiten leeg
 getRandomPlace(CurrentRobots,W,H,X,Y):-
     findall(
         co(X1,Y1),
         (   
-            pred(W,Xs),
-            pred(H,Ys),
+            listOfNnumbers(W,Xs),
+            listOfNnumbers(H,Ys),
             member(X1,Xs),
             member(Y1,Ys),
             \+member(robot(_,X1,Y1),CurrentRobots),
@@ -247,7 +260,8 @@ getRandomPlace(CurrentRobots,W,H,X,Y):-
     random(0,L,I),
     nth0(I, AllFreePlaces, co(X,Y)).
 
-pred(1, [0]):-!.
-pred(N, [N1|T]) :-
+% een lijst krijgen van N tot 1.
+listOfNnumbers(1, [0]):-!.
+listOfNnumbers(N, [N1|T]) :-
     N1 is N-1,
-    pred(N1, T).
+    listOfNnumbers(N1, T).
